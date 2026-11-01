@@ -35,12 +35,17 @@ git diff --stat v0 vX.Y.Z -- .github/workflows
 git tag -f v0 "$(git rev-parse vX.Y.Z^{commit})" && git push -f origin v0
 ```
 
-## Current state
+## Checking the current tags
 
-| Tag | Commit |
-| --- | --- |
-| `v0.1.0` | `15a9922` (phase 0 bootstrap) |
-| `v0` | `15a9922` |
+Tags move, so this file does not list them. Ask the remote instead:
+
+```bash
+git ls-remote --tags origin 'v*'
+```
+
+## Renovate preset
+
+The shared preset `renovate/default.json` is not read through a tag. The other repositories extend it as `github>parksubeom/bumpist-ship//renovate/default` (bumpist-ship itself as `local>parksubeom/bumpist-ship//renovate/default`), and Renovate reads both straight from `main`. A change to the preset therefore applies to all five Bumpist repositories as soon as it is merged, with no release step. Say which repositories and which update behaviour it affects in the PR description.
 
 ## 한국어 요약
 
@@ -48,3 +53,5 @@ git tag -f v0 "$(git rev-parse vX.Y.Z^{commit})" && git push -f origin v0
 - 이동 태그(`v0`, 이후 `v1`)는 새 고정 태그로만 옮깁니다. 태그 force push는 이때만 허용합니다: `git tag -f v0 <sha> && git push -f origin v0`
 - 워크플로가 바뀐 릴리스에서만 이동 태그를 옮깁니다. `.gitattributes`처럼 동작이 같은 변경이면 옮기지 않습니다.
 - 2단계에서 `release.yml`이 생기면 이 절차를 자동화합니다.
+- 태그는 움직이므로 이 문서에 적지 않습니다. 확인은 `git ls-remote --tags origin 'v*'`로 합니다.
+- Renovate 프리셋(`renovate/default.json`)은 태그가 아니라 main에서 바로 읽힙니다(다른 저장소는 `github>parksubeom/bumpist-ship//renovate/default`, bumpist-ship 자신은 `local>…`). 그래서 머지하는 즉시 5개 저장소에 적용되므로, PR 설명에 영향 범위를 적습니다.
