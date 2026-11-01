@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://parksubeom.github.io/bumpist-ship/schemas/quality/v0.json",
+  "title": "Bumpist quality report (C5)",
+  "description": "Results of the quality gate for one commit. Each reusable workflow writes a fragment; the final job merges them into quality-report.json and a PR comment.",
+  "type": "object",
+  "required": [
+    "$schema",
+    "commit",
+    "checks"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "https://parksubeom.github.io/bumpist-ship/schemas/quality/v0.json"
+    },
+    "source": {
+      "type": "string",
+      "description": "Workflow that produced this fragment, e.g. ci.yml"
+    },
+    "commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{7,40}$"
+    },
+    "previewUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "typecheck | lint | test | build | schemas | db-policy | e2e | a11y | visual-qa | review | web-vitals | size"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "failure",
+              "skipped",
+              "cancelled",
+              "warning"
+            ]
+          },
+          "blocking": {
+            "type": "boolean",
+            "default": true
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z0-9]+-[0-9]{3}$"
+            },
+            "description": "C3 rule IDs that failed"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "visual-qa only"
+          },
+          "details": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

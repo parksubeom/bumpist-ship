@@ -1,0 +1,69 @@
+name: ci (reusable)
+# Called by any repository:
+#   jobs:
+#     ci:
+#       uses: parksubeom/bumpist-ship/.github/workflows/ci.yml@v0
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        default: "22"
+      working-directory:
+        type: string
+        default: "."
+    outputs:
+      report-artifact:
+        description: Name of the uploaded C5 quality-report fragment
+        value: ${{ jobs.ci.outputs.report-artifact }}
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    outputs:
+      report-artifact: quality-ci
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: pnpm
+          cache-dependency-path: ${{ inputs.working-directory }}/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - id: typecheck
+        run: pnpm run --if-present typecheck
+      - id: lint
+        run: pnpm run --if-present lint
+      - id: test
+        run: pnpm run --if-present test
+      - id: build
+        run: pnpm run --if-present build
+      - id: schemas
+        run: pnpm run --if-present check:schemas
+      - name: Write C5 fragment
+        if: always()
+        run: |
+          mkdir -p .bumpist
+          cat > .bumpist/quality-ci.json <<EOF
+          {
+            "\$schema": "https://parksubeom.github.io/bumpist-ship/schemas/quality/v0.json",
+            "source": "ci.yml",
+            "commit": "${{ github.sha }}",
+            "checks": [
+              { "id": "typecheck", "status": "${{ steps.typecheck.outcome }}" },
+              { "id": "lint", "status": "${{ steps.lint.outcome }}" },
+              { "id": "test", "status": "${{ steps.test.outcome }}" },
+              { "id": "build", "status": "${{ steps.build.outcome }}" },
+              { "id": "schemas", "status": "${{ steps.schemas.outcome }}" }
+            ]
+          }
+          EOF
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: quality-ci
+          path: ${{ inputs.working-directory }}/.bumpist/quality-ci.json

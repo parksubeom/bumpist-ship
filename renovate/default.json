@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Shared Renovate preset for every Bumpist Suite repository.",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits"
+  ],
+  "timezone": "Asia/Seoul",
+  "schedule": [
+    "before 9am on monday"
+  ],
+  "packageRules": [
+    {
+      "description": "Bumpist packages update together and land first.",
+      "matchPackageNames": [
+        "@bumpist/**",
+        "bumpist-code",
+        "claude-distill"
+      ],
+      "groupName": "bumpist suite",
+      "schedule": [
+        "at any time"
+      ]
+    },
+    {
+      "description": "Bumpist reusable workflows.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "parksubeom/bumpist-ship"
+      ],
+      "groupName": "bumpist-ship workflows"
+    }
+  ]
+}

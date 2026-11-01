@@ -1,0 +1,12 @@
+{
+  "name": "bumpist-ship",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Reusable GitHub Actions workflows and quality report for the Bumpist Suite.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "check:schemas": "node scripts/check-schemas.mjs bumpist-ship"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
