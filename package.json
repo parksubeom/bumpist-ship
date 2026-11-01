@@ -8,5 +8,5 @@
   "scripts": {
     "check:schemas": "node scripts/check-schemas.mjs bumpist-ship"
   },
-  "packageManager": "pnpm@9.15.0"
+  "packageManager": "pnpm@9.15.9"
 }
